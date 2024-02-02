@@ -8,8 +8,6 @@ import numpy as np
 import pandas as pd
 import re
 
-import seaborn
-from matplotlib import pyplot as plt
 
 from util.util import printDF
 
@@ -78,9 +76,6 @@ addColumnCharCountCleaned(df)
 addColumnEmojiCount(df)
 addColumnsHashtagsAndHashtagCount(df)
 printDF(df)
-
-
-# In[6]:
 
 
 # Main task: Create a clean text that does not contain any special characters, links, hashtags or similar.
