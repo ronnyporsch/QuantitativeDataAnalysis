@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import numpy as np
 # In[47]:
 
 
 # !pip install pandas openpyxl
 import pandas as pd
 import re
+
+import seaborn
+from matplotlib import pyplot as plt
+
+from util.util import printDF
 
 
 def renameAllColumns(df):
@@ -72,8 +77,8 @@ addColumnCleanTitle(df)
 addColumnCharCountCleaned(df)
 addColumnEmojiCount(df)
 addColumnsHashtagsAndHashtagCount(df)
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-    print(df)
+printDF(df)
+
 
 # In[6]:
 
