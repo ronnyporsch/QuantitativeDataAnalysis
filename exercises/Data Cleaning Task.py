@@ -9,7 +9,7 @@ import pandas as pd
 import re
 
 
-from util.util import printDF
+from util.util import printDf
 
 
 def renameAllColumns(df):
@@ -75,7 +75,7 @@ addColumnCleanTitle(df)
 addColumnCharCountCleaned(df)
 addColumnEmojiCount(df)
 addColumnsHashtagsAndHashtagCount(df)
-printDF(df)
+printDf(df)
 
 
 # Main task: Create a clean text that does not contain any special characters, links, hashtags or similar.
