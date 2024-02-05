@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 import statsmodels.api as sm
+from sklearn.preprocessing import normalize
 
 
 # cleans a string by removing everything except letters and numbers
@@ -31,6 +32,7 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, threshold: float):
     :param threshold: between 0 (no correlation) and 1 (max correlation)
     :return: df without highly correlated features
     """
+    featuresStart = len(df.columns)
     # Create correlation matrix
     corr_matrix = df.select_dtypes(['number']).corr().abs()
 
@@ -41,10 +43,13 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, threshold: float):
     to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
 
     # Drop features
-    return df.drop(to_drop, axis=1, inplace=False)
+    newDf = df.drop(to_drop, axis=1, inplace=False)
+    droppedFeatures = featuresStart - len(newDf.columns)
+    print("dropped " + str(droppedFeatures) + " features")
+    return newDf
 
 
-def createConfusionMatrix(y_test, predictions, dependentVariable):
+def createConfusionMatrix(y_test, predictions, dependentVariable, model):
     matrix = confusion_matrix(y_test, predictions)
     fig = plt.figure(figsize=(8, 8))
     sns.heatmap(matrix, square=True, annot=True, fmt="d", cbar=True,
@@ -52,34 +57,55 @@ def createConfusionMatrix(y_test, predictions, dependentVariable):
                 yticklabels=("Not " + dependentVariable, dependentVariable))
     plt.ylabel("Reality")
     plt.xlabel("Prediction")
+    plt.title(str(model))
     plt.show()
 
 
-def performLogisticRegression(df: pd.DataFrame, dependentVariable: str):
+def evaluateModel(model, percentualPredictions, visitorScores):
+    return None
+    # percentualPredictions = percentualPredictions[1:1000][:, 0]
+    # visitorScores = visitorScores[1:1000]
+    # plt.title("Line graph " + str(model))
+    # xsPred = [x for x in range(len(percentualPredictions))]
+    # xsVisScore = [x for x in range(len(visitorScores))]
+    # plt.plot(xsPred, percentualPredictions, color="red")
+    # plt.plot(xsVisScore, visitorScores, color="blue")
+    # plt.show()
+    # print("predictions: " + str(percentualPredictions))
+    # # for i in range(len(percentualPredictions)):
+    # #     print(str(model), " visitorScore: ", visitorScores[i])
+
+
+def trainModel(df: pd.DataFrame, dependentVariable: str, model):
     X = df.drop([dependentVariable], axis=1)
+    X = X.rename(str, axis="columns")
     y = df[dependentVariable]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+    visitorScoresTest = X_test['Visitor_Score'].to_numpy()
+    X_test = X_test.drop(['Visitor_Score'], axis=1)
+    X_train = X_train.drop(['Visitor_Score'], axis=1)
 
-    logReg_df = LogisticRegression(max_iter=10000)
-    logReg_df.fit(X_train, y_train)
-    predictions = logReg_df.predict(X_test)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    predictPercent = model.predict_proba(X_test)
+    evaluateModel(model, predictPercent, visitorScoresTest)
 
-    createConfusionMatrix(y_test, predictions, dependentVariable)
+    createConfusionMatrix(y_test, predictions, dependentVariable, model)
 
     # Calculate the accuracy of the predictions
     accuracy = accuracy_score(y_test, predictions)
 
     # Output the accuracy
-    print("Accuracy:", accuracy * 100, "%")
+    print(str(model) + " Accuracy:", accuracy * 100, "%")
 
     # insert an intercept
-    X['intercept'] = 1
-
-    # Perform logistic regression without intercept
-    logit_model = sm.Logit(y, X)
-    result = logit_model.fit()
-
-    result.summary()
+    # X['intercept'] = 1
+    #
+    # # Perform logistic regression without intercept
+    # logit_model = sm.Logit(y, X)
+    # result = logit_model.fit()
+    #
+    # result.summary()
 
 
 def tuneHyperParameters(df: pd.DataFrame, dependentVariable: str):

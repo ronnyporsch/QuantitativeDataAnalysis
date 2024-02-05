@@ -1,0 +1,2 @@
+- Column "BornInGermany" based on "Einreisejahr"
+- self employed -> Nein=nein
