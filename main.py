@@ -1,13 +1,19 @@
 import sys
 
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.utils import resample
 
 from util.util import *
+
+# models = [RandomForestClassifier(), GaussianNB(), LogisticRegression()]
+models = [
+    RandomForestClassifier(),
+    GradientBoostingClassifier(),
+    LogisticRegression(),
+    GaussianNB(),
+]
+
 
 
 def mergePhoneColumns(data: pd.DataFrame):
@@ -110,13 +116,17 @@ def transformSalesColumn(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def trainAllModels(data: pd.DataFrame, dependentVariable: str):
-    models = [RandomForestClassifier(), GaussianNB(), LogisticRegression()]
     for model in models:
         trainModel(data, dependentVariable, model)
 
 
+def tuneAllModels(data: pd.DataFrame, dependentVariable: str):
+    for model in models:
+        tuneHyperParameters(data, dependentVariable, model)
+
+
 def upsampleMinority(data: pd.DataFrame):
-    # # upsample minority class
+    # upsample minority class
     df_majority = data[(data['sales'] == 0)]
     df_minority = data[(data['sales'] == 1)]
     df_minority_upsampled = resample(df_minority,
@@ -136,6 +146,12 @@ def upsampleMinority(data: pd.DataFrame):
 
 
 def buildDF():
+    def mergeOwners(row):
+        if str(inputDF['Owner_left']).casefold() != 'nan'.casefold():
+            return row['Owner_left']
+        else:
+            return row['Owner_right']
+
     if len(sys.argv) >= 2 and sys.argv[1].lower() == 'true':
         return pd.read_csv("data/cache/cachedDF.csv")
     else:
@@ -144,6 +160,11 @@ def buildDF():
         inputDF = mainData.copy().drop("Visitor_Score", axis=1)
         # transformVisitorScore(inputDF)
 
+        inputDF = inputDF.join(additionalData.set_index('id'), on='id', how='left', lsuffix='_left', rsuffix='_right')
+        inputDF['Owner_Combined'] = inputDF.apply(mergeOwners, axis=1)
+        inputDF = inputDF.drop('Owner_left', axis=1)
+        inputDF = inputDF.drop('Owner_right', axis=1)
+
         inputDF = transformSalesColumn(inputDF)
         # inspectData(df)
         inputDF = cleanData(inputDF)
@@ -151,17 +172,23 @@ def buildDF():
         inputDF = findUsefulVariables(inputDF)
         inputDF = upsampleMinority(inputDF)
         inputDF.to_csv("data/cache/cachedDF.csv")
+        # printDf(inputDF)
+
         return inputDF
+
 
 if __name__ == '__main__':
     df = buildDF()
-    corr_matrix = df.corr()['sales']
+    corr_matrix = df.corr()['sales'].abs().sort_values(ascending=False)
     print("Correlation Matrix: ")
-    # printDf(corr_matrix.sort_values(), True)
-    top_features = corr_matrix.abs().sort_values(ascending=False)[1:11].index
+    printDf(corr_matrix, True)
+    # exit(5)
+    top_features = corr_matrix[1:40].index
+    print("selected features: " + str(top_features))
     top_features = list(top_features) + ['sales']
 
     df = df[top_features]
+    # tuneHyperParameters(df, 'sales', LogisticRegression())
     trainAllModels(df, 'sales')
 
     # sns.heatmap(df.isnull(), yticklabels=False, cbar=False, cmap="rainbow")

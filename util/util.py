@@ -19,6 +19,7 @@ def cleanString(string: str) -> str:
 
 def printDf(df: pd.DataFrame, showAllRows: bool = False):
     pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', 10)
     pd.set_option('display.max_columns', None)
     if showAllRows:
         pd.set_option('display.max_rows', None)
@@ -107,14 +108,13 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model):
     # result.summary()
 
 
-def tuneHyperParameters(df: pd.DataFrame, dependentVariable: str):
+def tuneHyperParameters(df: pd.DataFrame, dependentVariable: str, model):
     x = df.drop([dependentVariable], axis=1)
     y = df[dependentVariable]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
     grid = {"C": np.logspace(-3, 3, 7), "penalty": ["l1", "l2"]}  # l1 lasso l2 ridge
-    logreg = LogisticRegression()
-    logreg_cv = GridSearchCV(logreg, grid, cv=10)
-    logreg_cv.fit(x_train, y_train)
+    model_cv = GridSearchCV(model, grid, cv=10)
+    model_cv.fit(x_train, y_train)
 
-    print("tuned hpyerparameters :(best parameters) ", logreg_cv.best_params_)
-    print("accuracy :", logreg_cv.best_score_)
+    print(str(model), " tuned hpyerparameters :(best parameters) ", model_cv.best_params_)
+    print(str(model), " accuracy :", model_cv.best_score_)

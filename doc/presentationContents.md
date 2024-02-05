@@ -13,7 +13,7 @@
 
 ## Feature Selection
 - calculated a correlation matrix for sales variable
-- features most related to the sales variable where selected for the model building
+- features most related (positively or negatively) to the sales variable where selected for the model building
 
 ## Building the models
 - generated synthetic data points for minority class 
@@ -33,3 +33,6 @@
 - sometimes weird datatypes (example: "Geburtsjahr" is saved as a float) -> use less storage when changing to int
 - use a consistent naming scheme (sometimes snake case with all lower case, sometimes first letter is upper case; randomly changing between german and english)
 - Berufsausbildung_anerkannt: [nan 'Ja (z.b. von ZSBA)' 'Nein' 'weiß ich nicht'] -> should be 'ja', 'nein', 'null'
+
+# Interesting findings
+- Owner correlation with sales is 23% -> could be used to find out who should get a raise (also, super problematic when it comes to employer rights)
