@@ -121,38 +121,47 @@ def upsampleMinority(data: pd.DataFrame):
     df_minority = data[(data['sales'] == 1)]
     df_minority_upsampled = resample(df_minority,
                                      replace=True,  # sample with replacement
-                                     n_samples=7878,  # to match majority class
+                                     n_samples=len(df_majority),  # to match majority class
                                      random_state=42)  # reproducible results
     # Combine majority class with upsampled minority class
     return pd.concat([df_minority_upsampled, df_majority])
 
 
-def transformVisitorScore(data: pd.DataFrame):
-    data['Visitor_Score'] = pd.to_numeric(data['Visitor_Score'], errors='coerce').fillna(0).astype('int')
-    data['Visitor_Score'] = data['Visitor_Score'].apply(lambda x: 10000 if x > 10000 else x)
+# def transformVisitorScore(data: pd.DataFrame):
+#     data['Visitor_Score'] = pd.to_numeric(data['Visitor_Score'], errors='coerce').fillna(0).astype('int')
+#     data['Visitor_Score'] = data['Visitor_Score'].apply(lambda x: 10000 if x > 10000 else x)
+#
+#     data['Visitor_Score'] = MinMaxScaler().fit_transform(data[['Visitor_Score']])
+#     return data
 
-    data['Visitor_Score'] = MinMaxScaler().fit_transform(data[['Visitor_Score']])
-    return data
 
+def buildDF():
+    if len(sys.argv) >= 2 and sys.argv[1].lower() == 'true':
+        return pd.read_csv("data/cache/cachedDF.csv")
+    else:
+        mainData = pd.read_csv("data/input/CRM-Contacts_clean.csv")
+        additionalData = pd.read_csv("data/input/CRM-Calls.csv")
+        inputDF = mainData.copy().drop("Visitor_Score", axis=1)
+        # transformVisitorScore(inputDF)
+
+        inputDF = transformSalesColumn(inputDF)
+        # inspectData(df)
+        inputDF = cleanData(inputDF)
+        # inspectData(df)
+        inputDF = findUsefulVariables(inputDF)
+        inputDF = upsampleMinority(inputDF)
+        inputDF.to_csv("data/cache/cachedDF.csv")
+        return inputDF
 
 if __name__ == '__main__':
-    mainData = pd.read_csv("data/input/CRM-Contacts_clean.csv")
-    additionalData = pd.read_csv("data/input/CRM-Calls.csv")
-    df = mainData.copy()  # .drop("Visitor_Score", axis=1)
-    transformVisitorScore(df)
-
-    df = transformSalesColumn(df)
-    # inspectData(df)
-    df = cleanData(df)
-    # inspectData(df)
-    df = findUsefulVariables(df)
-    df = upsampleMinority(df)
+    df = buildDF()
     corr_matrix = df.corr()['sales']
     print("Correlation Matrix: ")
-    print(corr_matrix.sort_values())
+    # printDf(corr_matrix.sort_values(), True)
+    top_features = corr_matrix.abs().sort_values(ascending=False)[1:11].index
+    top_features = list(top_features) + ['sales']
 
-    df = df[['sales', 'Visitor_Score', 'Geburtsjahr', 'Minijob_kein_Minijob_vorhanden', 'basis_for_naturalization_7_Jahre_-_§10_Abs._3_Satz_2', 'Familienstand_ledig']]
-    inspectData(df)
+    df = df[top_features]
     trainAllModels(df, 'sales')
 
     # sns.heatmap(df.isnull(), yticklabels=False, cbar=False, cmap="rainbow")

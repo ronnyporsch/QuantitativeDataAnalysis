@@ -61,8 +61,7 @@ def createConfusionMatrix(y_test, predictions, dependentVariable, model):
     plt.show()
 
 
-def evaluateModel(model, percentualPredictions, visitorScores):
-    return None
+# def evaluateModel(model, percentualPredictions, visitorScores):
     # percentualPredictions = percentualPredictions[1:1000][:, 0]
     # visitorScores = visitorScores[1:1000]
     # plt.title("Line graph " + str(model))
@@ -81,14 +80,14 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model):
     X = X.rename(str, axis="columns")
     y = df[dependentVariable]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-    visitorScoresTest = X_test['Visitor_Score'].to_numpy()
-    X_test = X_test.drop(['Visitor_Score'], axis=1)
-    X_train = X_train.drop(['Visitor_Score'], axis=1)
+    # visitorScoresTest = X_test['Visitor_Score'].to_numpy()
+    # X_test = X_test.drop(['Visitor_Score'], axis=1)
+    # X_train = X_train.drop(['Visitor_Score'], axis=1)
 
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     predictPercent = model.predict_proba(X_test)
-    evaluateModel(model, predictPercent, visitorScoresTest)
+    # evaluateModel(model, predictPercent, visitorScoresTest)
 
     createConfusionMatrix(y_test, predictions, dependentVariable, model)
 
