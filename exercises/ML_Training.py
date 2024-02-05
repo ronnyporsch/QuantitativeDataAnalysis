@@ -124,49 +124,49 @@ df
 # ## Analysis
 
 
-X = df.drop(["Transported", "deck_B", "deck_C", "deck_D", "deck_E", "deck_F", "deck_G", "deck_T", "VIP"], axis=1)
-y = df["Transported"]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-
-X_train
-
-logReg_df = LogisticRegression(max_iter=10000)
-logReg_df.fit(X_train, y_train)
-predictions = logReg_df.predict(X_test)
-
-matrix = confusion_matrix(y_test, predictions)
-fig = plt.figure(figsize=(8, 8))
-sns.heatmap(matrix, square=True, annot=True, fmt="d", cbar=True,
-            xticklabels=("Not Transported", "Transported"),
-            yticklabels=("Not Transported", "Transported"))
-plt.ylabel("Reality")
-plt.xlabel("Prediction")
-
-plt.show()
-
-# Calculate the accuracy of the predictions
-accuracy = accuracy_score(y_test, predictions)
-
-# Output the accuracy
-print("Accuracy:", accuracy * 100, "%")
-
-# insert an intercept
-df['intercept'] = 1
-
-X = df[["intercept", "CryoSleep", 'Age', 'VIP', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck',
-        'pso',
-        'trap',
-        'Europa',
-        'Mars',
-        'starboard']]
-
-y = df['Transported']
-
-# Perform logistic regression without intercept
-logit_model = sm.Logit(y, X)
-result = logit_model.fit()
-
-result.summary()
+# X = df.drop(["Transported", "deck_B", "deck_C", "deck_D", "deck_E", "deck_F", "deck_G", "deck_T", "VIP"], axis=1)
+# y = df["Transported"]
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+#
+# X_train
+#
+# logReg_df = LogisticRegression(max_iter=10000)
+# logReg_df.fit(X_train, y_train)
+# predictions = logReg_df.predict(X_test)
+#
+# matrix = confusion_matrix(y_test, predictions)
+# fig = plt.figure(figsize=(8, 8))
+# sns.heatmap(matrix, square=True, annot=True, fmt="d", cbar=True,
+#             xticklabels=("Not Transported", "Transported"),
+#             yticklabels=("Not Transported", "Transported"))
+# plt.ylabel("Reality")
+# plt.xlabel("Prediction")
+#
+# plt.show()
+#
+# # Calculate the accuracy of the predictions
+# accuracy = accuracy_score(y_test, predictions)
+#
+# # Output the accuracy
+# print("Accuracy:", accuracy * 100, "%")
+#
+# # insert an intercept
+# df['intercept'] = 1
+#
+# X = df[["intercept", "CryoSleep", 'Age', 'VIP', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck',
+#         'pso',
+#         'trap',
+#         'Europa',
+#         'Mars',
+#         'starboard']]
+#
+# y = df['Transported']
+#
+# # Perform logistic regression without intercept
+# logit_model = sm.Logit(y, X)
+# result = logit_model.fit()
+#
+# result.summary()
 
 column_names = df.columns.tolist()
 column_names

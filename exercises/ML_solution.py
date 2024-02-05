@@ -321,14 +321,14 @@ from sklearn.metrics import confusion_matrix
 # In[39]:
 
 
-matrix = confusion_matrix(y_test, predictions)
-fig = plt.figure(figsize=(8,8))
-sns.heatmap(matrix,square=True,annot=True,fmt="d",cbar=True,
-            xticklabels=("Not survived","Survived"),
-            yticklabels=("Not survived","Survived"))
-plt.ylabel("Reality")
-plt.xlabel("Prediction")
-plt.show()
+# matrix = confusion_matrix(y_test, predictions)
+# fig = plt.figure(figsize=(8,8))
+# sns.heatmap(matrix,square=True,annot=True,fmt="d",cbar=True,
+#             xticklabels=("Not survived","Survived"),
+#             yticklabels=("Not survived","Survived"))
+# plt.ylabel("Reality")
+# plt.xlabel("Prediction")
+# plt.show()
 
 
 # In[40]:
