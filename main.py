@@ -186,15 +186,14 @@ def buildDF():
 if __name__ == '__main__':
     df = buildDF()
     corr_matrix = df.corr()['sales'].abs().sort_values(ascending=False)
-    print("Correlation Matrix: ")
-    printDf(corr_matrix, True)
-    # plt.matshow(df.corr()['sales'])
-    # plt.show()
 
     top_features = corr_matrix[1:40].index
     print("selected features: " + str(top_features))
     top_features = list(top_features) + ['sales']
 
     df = df[top_features]
+    print(df.describe())
+    print(df.info)
+    df.to_csv("data/output/finalDF.csv")
     # tuneHyperParametersRF(df, 'sales')
     trainAllModels(df, 'sales')

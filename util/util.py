@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+from joblib import dump, load
 import statsmodels.api as sm
 from sklearn.preprocessing import normalize
 
@@ -102,6 +103,8 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model):
 
     # Output the accuracy
     print(str(model) + " Accuracy:", accuracy * 100, "%")
+    dump(model, "models/" + str(model) + '.joblib')
+
 
     # insert an intercept
     # X['intercept'] = 1
