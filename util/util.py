@@ -12,7 +12,7 @@ import statsmodels.api as sm
 
 
 # cleans a string by removing everything except letters and numbers
-def cleanString(string: str):
+def cleanString(string: str) -> str:
     return re.sub('[^A-Za-z0-9]+', '', string)
 
 

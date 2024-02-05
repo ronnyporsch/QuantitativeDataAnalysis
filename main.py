@@ -21,8 +21,9 @@ def mergePhoneColumns(data: pd.DataFrame):
 
 
 if __name__ == '__main__':
-    originalDf = pd.read_excel("")  # TODO
-    df = originalDf.copy().drop("Visitor_Score")
+    mainData = pd.read_csv("data/input/CRM-Contacts_clean.csv")
+    additionalData = pd.read_csv("data/input/CRM-Calls.csv")
+    df = mainData.copy().drop("Visitor_Score")
 
     mergePhoneColumns(df)
     printDf(df)
