@@ -13,7 +13,7 @@
 
 ## Feature Selection
 - calculated a correlation matrix for sales variable
-- features most related (positively or negatively) to the sales variable where selected for the model building
+- features most related (positively or negatively) to the sales variable were selected for the model building
 
 ## Building the models
 - generated synthetic data points for minority class 

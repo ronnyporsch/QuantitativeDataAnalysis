@@ -2,6 +2,7 @@ import sys
 
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
 from sklearn.utils import resample
 
 from util.util import *
@@ -12,8 +13,8 @@ models = [
     GradientBoostingClassifier(),
     LogisticRegression(),
     GaussianNB(),
+    MLPClassifier()
 ]
-
 
 
 def mergePhoneColumns(data: pd.DataFrame):
@@ -63,6 +64,7 @@ def cleanData(data: pd.DataFrame):
     def transformColumnToInt(name):
         data[name] = pd.to_numeric(data[name], errors='coerce').fillna(0).astype('int')
 
+
     data = data.replace(' ', '_', regex=True)
     mergePhoneColumns(data)
     for column in data.columns:
@@ -71,6 +73,7 @@ def cleanData(data: pd.DataFrame):
             data[column].fillna(0, inplace=True)
             data[column] = data[column].astype(int)
 
+    data['BornInGermany'] = np.where(data['Einreisejahr'].str.lower().str.contains('deutschland'), 1, 0)
     data['Geburtsjahr'] = data['Geburtsjahr'].apply(cleanGeburtsjahr)
     columnsToInt = ['Rentenbeitraege', 'Einreisejahr', 'Number_Of_Chats', 'Kinder', 'phone_pension', 'temporary_right_of_residence_since', 'Anzahl_Kinder_unter_25_Jahre',
                     'acquired_right_of_residence']
@@ -100,7 +103,7 @@ def cleanData(data: pd.DataFrame):
 
 def findUsefulVariables(data: pd.DataFrame):
     # corrM = data.select_dtypes(['number']).corr()  # only look at numbers
-    # data = dropFeaturesWithHighCorrelation(data, 0.8)
+    data = dropFeaturesWithHighCorrelation(data, 0.8)
     data = data.select_dtypes(exclude=['object', 'bool'])
     for column in data.columns:
         # fill NaN with 0 and convert to int
@@ -121,8 +124,7 @@ def trainAllModels(data: pd.DataFrame, dependentVariable: str):
 
 
 def tuneAllModels(data: pd.DataFrame, dependentVariable: str):
-    for model in models:
-        tuneHyperParameters(data, dependentVariable, model)
+    tuneHyperParametersRF(data, dependentVariable)
 
 
 def upsampleMinority(data: pd.DataFrame):
@@ -159,6 +161,9 @@ def buildDF():
         additionalData = pd.read_csv("data/input/CRM-Calls.csv")
         inputDF = mainData.copy().drop("Visitor_Score", axis=1)
         # transformVisitorScore(inputDF)
+        # print(inputDF.describe())
+        # print(inputDF.info)
+        # exit(5)
 
         inputDF = inputDF.join(additionalData.set_index('id'), on='id', how='left', lsuffix='_left', rsuffix='_right')
         inputDF['Owner_Combined'] = inputDF.apply(mergeOwners, axis=1)
@@ -166,9 +171,10 @@ def buildDF():
         inputDF = inputDF.drop('Owner_right', axis=1)
 
         inputDF = transformSalesColumn(inputDF)
-        # inspectData(df)
+        # inspectData(inputDF)
         inputDF = cleanData(inputDF)
-        # inspectData(df)
+        # inspectData(inputDF)
+        # exit(5)
         inputDF = findUsefulVariables(inputDF)
         inputDF = upsampleMinority(inputDF)
         inputDF.to_csv("data/cache/cachedDF.csv")
@@ -182,13 +188,13 @@ if __name__ == '__main__':
     corr_matrix = df.corr()['sales'].abs().sort_values(ascending=False)
     print("Correlation Matrix: ")
     printDf(corr_matrix, True)
-    # exit(5)
+    # plt.matshow(df.corr()['sales'])
+    # plt.show()
+
     top_features = corr_matrix[1:40].index
     print("selected features: " + str(top_features))
     top_features = list(top_features) + ['sales']
 
     df = df[top_features]
-    # tuneHyperParameters(df, 'sales', LogisticRegression())
+    # tuneHyperParametersRF(df, 'sales')
     trainAllModels(df, 'sales')
-
-    # sns.heatmap(df.isnull(), yticklabels=False, cbar=False, cmap="rainbow")
