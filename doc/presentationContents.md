@@ -1,3 +1,30 @@
+# What have we done
+## Cleaned Dataset
+- Reading the data into a dataframe
+- removing Visitor_Score
+- transform sales column: 0 -> 0; rest = 1
+- replaced potentially problematic chars (for example spaces)
+- merged phone-columns with their non-phone-equivalents (if those existed)
+- created dummy values for categorical features
+- replaced NaN with 0 where applicable
+- transformed floats to int where applicable (years, number of children etc.)
+- removed features that looked too hard to deal with or seemed not worth it (given time constraint)
+- removed highly interrelated features
+
+## Feature Selection
+- calculated a correlation matrix for sales variable
+- features most related to the sales variable where selected for the model building
+
+## Building the models
+- generated synthetic data points for minority class 
+- split data into train and test (80/20)
+- creating confusion matrix, calculating accuracy
+
+## Optimization
+- Possibilities: GridSearch, RandomSearch, Bayesian Optimization
+- here: Bayesian Optimization
+
+
 # recommendations for better data collection
 - do not allow all data types for the fields. example: in "Einreisejahr" there is a value "DFGKJDFS"
 - also check the length of values (for example: "Geburtsjahr" should always consist of 4 digits)
