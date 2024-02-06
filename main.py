@@ -1,6 +1,7 @@
 import sys
 
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.utils import resample
@@ -9,6 +10,7 @@ from Constants import cachedDfFilePath
 from DataCleaning import cleanData
 from DataReadingAndMerging import readAndMergeData
 from FeatureSelection import selectFeatures
+from ModelTrainingAndEvaluation import trainModel, tuneHyperParametersRF
 from util import *
 
 # models = [RandomForestClassifier(), GaussianNB(), LogisticRegression()]
