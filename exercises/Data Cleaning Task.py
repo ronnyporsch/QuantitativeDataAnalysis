@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-import numpy as np
 # In[47]:
 
 
@@ -9,7 +8,7 @@ import pandas as pd
 import re
 
 
-from util.util import printDf
+from util import printDf
 
 
 def renameAllColumns(df):
