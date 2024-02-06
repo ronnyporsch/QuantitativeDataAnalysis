@@ -8,12 +8,9 @@ def transformSalesColumn(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def convertVariablesToIntOrDrop(df: pd.DataFrame):
-    # corrM = data.select_dtypes(['number']).corr()  # only look at numbers
-    # df = df.select_dtypes(exclude=['object', 'bool'])  # TODO dont drop booleans
-    df = df.select_dtypes(exclude=['object'])  # TODO dont drop booleans
+    df = df.select_dtypes(exclude=['object'])
     for column in df.columns:
         # fill NaN with 0 and convert to int
-        # if df[column].dtype == np.int64 or df[column].dtype == np.int32:
         df[column] = df[column].astype(int)
         df[column].fillna(0, inplace=True)
     return df
