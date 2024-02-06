@@ -39,7 +39,7 @@ def createConfusionMatrix(y_test, predictions, dependentVariable, model):
     plt.ylabel("Reality", fontsize=16)
     plt.xlabel("Prediction", fontsize=16)
     plt.title(str(model) + " with added synthetic data", fontsize=18, y=1.18)
-    fig.savefig("doc/plots/cw_" + str(model) + ".png", dpi=300)
+    fig.savefig("data/output/plots/cw_" + str(model) + ".png", dpi=300)
     plt.show()
 
 
@@ -68,7 +68,7 @@ class ModelResult:
 
 def saveModelResult(model, result):
     dump(model, "models/" + str(model) + '.joblib')
-    with open("output/" + str(model) + "_results.json", 'w', encoding='utf-8') as f:
+    with open("data/output/" + str(model) + "_results.json", 'w', encoding='utf-8') as f:
         json.dump(vars(result), f, ensure_ascii=False, indent=4)
 
 

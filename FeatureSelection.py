@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 
+# TODO this method does currently not work as expected (will delete variables that are closely correlated with sales?
 def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: float):
     """
     :source: https://stackoverflow.com/questions/29294983/how-to-calculate-correlation-between-all-columns-and-remove-highly-correlated-on
@@ -10,7 +11,7 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: fl
     :param threshold: between 0 (no correlation) and 1 (max correlation)
     :return: df without highly correlated features
     """
-    featuresStart = len(df.columns)
+    featuresStart = set(df.columns.to_list())
     # Create correlation matrix
     # corr_matrix = df.select_dtypes(['number']).corr().abs()
 
@@ -22,7 +23,7 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: fl
 
     # Drop features
     newDf = df.drop(to_drop, axis=1, inplace=False)
-    droppedFeatures = featuresStart - len(newDf.columns)
+    droppedFeatures = featuresStart.difference(set(newDf.columns.to_list()))
     print("dropped " + str(droppedFeatures) + " features")
     return newDf
 
@@ -30,9 +31,9 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: fl
 def selectFeatures(df) -> pd.DataFrame:
     corr_matrix = df.corr()
     corr_matrixSales = corr_matrix['sales'].abs().sort_values(ascending=False)
-    df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
+    # df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
 
-    top_features = corr_matrixSales[1:100].index
+    top_features = corr_matrixSales[1:].index
     print("selected features: " + str(top_features))
     top_features = list(top_features) + ['sales']
 
