@@ -35,6 +35,6 @@ def selectFeatures(df) -> pd.DataFrame:
 
     top_features = corr_matrixSales[1:].index
     print("selected features: " + str(top_features))
-    top_features = list(top_features) + ['sales']
+    top_features = list(top_features) + ['sales'] + ['Visitor_Score']
 
     return df[top_features]

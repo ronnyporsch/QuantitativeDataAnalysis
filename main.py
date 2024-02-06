@@ -18,8 +18,8 @@ models = [
     RandomForestClassifier(),
     GradientBoostingClassifier(),
     LogisticRegression(),
-    GaussianNB(),
-    MLPClassifier()
+    GaussianNB()
+    # MLPClassifier()
 ]
 
 
@@ -55,14 +55,6 @@ def upsampleMinority(data: pd.DataFrame):
     return pd.concat([df_minority_upsampled, df_majority])
 
 
-# def transformVisitorScore(data: pd.DataFrame):
-#     data['Visitor_Score'] = pd.to_numeric(data['Visitor_Score'], errors='coerce').fillna(0).astype('int')
-#     data['Visitor_Score'] = data['Visitor_Score'].apply(lambda x: 10000 if x > 10000 else x)
-#
-#     data['Visitor_Score'] = MinMaxScaler().fit_transform(data[['Visitor_Score']])
-#     return data
-
-
 # def executeOrReadFromCache(function, fromCache=False):
 #     if fromCache:
 #         return pd.read_csv(cachedDfFilePath)
@@ -76,7 +68,7 @@ def buildDF() -> pd.DataFrame:
 
     inputDF = readAndMergeData()
 
-    inputDF = inputDF.copy().drop("Visitor_Score", axis=1)
+    # inputDF = inputDF.copy().drop("Visitor_Score", axis=1)
     # transformVisitorScore(inputDF)
 
     inputDF = cleanData(inputDF)
