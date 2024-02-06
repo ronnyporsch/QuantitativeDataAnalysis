@@ -69,10 +69,8 @@ def upsampleMinority(data: pd.DataFrame):
 
 
 def buildDF() -> pd.DataFrame:
-    # if len(sys.argv) >= 2:
-    #     startingPoint = int(sys.argv[1])
-    # else:
-    #     startingPoint = 0
+    if len(sys.argv) >= 2 and int(sys.argv[1]) >= 1:
+        return pd.read_csv(cachedDfFilePath)
 
     inputDF = readAndMergeData()
 
