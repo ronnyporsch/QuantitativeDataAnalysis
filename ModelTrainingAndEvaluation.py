@@ -31,9 +31,9 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model):
 
     # Calculate the accuracy of the predictions
     accuracy = accuracy_score(y_test, predictions)
-    accuracyVisScore = accuracy_score(y_test, visitorScoresTest)
-    print("Visitor Score Accuracy:", accuracyVisScore * 100, "%")
-    createConfusionMatrix(y_test, visitorScoresTest, dependentVariable, "Visitor Score")
+    # accuracyVisScore = accuracy_score(y_test, visitorScoresTest)
+    # print("Visitor Score Accuracy:", accuracyVisScore * 100, "%")
+    # createConfusionMatrix(y_test, visitorScoresTest, dependentVariable, "Visitor Score")
 
     # Output the accuracy
     print(str(model) + " Accuracy:", accuracy * 100, "%")
