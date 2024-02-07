@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from bayes_opt import BayesianOptimization
-from matplotlib import pyplot as plt
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -10,30 +9,30 @@ from sklearn.preprocessing import MinMaxScaler
 from util import createConfusionMatrix, ModelResult, saveModelResult
 
 
-# def trainAllModels(df: pd.DataFrame, dependantVariable: str):
-
-
-def trainModel(df: pd.DataFrame, dependentVariable: str, model):
+def trainAllModels(df: pd.DataFrame, dependentVariable: str, models):
     X = df.drop([dependentVariable], axis=1)
-    # X = X.rename(str, axis="columns")
     y = df[dependentVariable]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
     visitorScoresTest = transformVisitorScore(X_test['Visitor_Score'].to_numpy())
     X_test = X_test.drop(['Visitor_Score'], axis=1)
     X_train = X_train.drop(['Visitor_Score'], axis=1)
 
+    accuracyVisScore = accuracy_score(y_test, visitorScoresTest)
+    print("Visitor Score Accuracy:", accuracyVisScore * 100, "%")
+    createConfusionMatrix(y_test, visitorScoresTest, dependentVariable, "Visitor Score")
+
+    for model in models:
+        trainModel(df, dependentVariable, model, X_train, X_test, y_train, y_test)
+
+
+def trainModel(df: pd.DataFrame, dependentVariable: str, model, X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     predictPercent = model.predict_proba(X_test)
-    # evaluateModel(model, predictPercent, visitorScoresTest)
 
     createConfusionMatrix(y_test, predictions, dependentVariable, model)
 
-    # Calculate the accuracy of the predictions
     accuracy = accuracy_score(y_test, predictions)
-    # accuracyVisScore = accuracy_score(y_test, visitorScoresTest)
-    # print("Visitor Score Accuracy:", accuracyVisScore * 100, "%")
-    # createConfusionMatrix(y_test, visitorScoresTest, dependentVariable, "Visitor Score")
 
     # Output the accuracy
     print(str(model) + " Accuracy:", accuracy * 100, "%")
@@ -110,21 +109,11 @@ def evaluateModel(model, percentualPredictions, visitorScores):
 
 
 def transformVisitorScore(arr: np.array):
-    # df['Visitor_Score'] = pd.to_numeric(df['Visitor_Score'], errors='coerce').fillna(0).astype('int')
-    # df['Visitor_Score'] = df['Visitor_Score'].apply(lambda x: 10000 if x > 10000 else x)
-    #
-    # df['Visitor_Score'] = MinMaxScaler().fit_transform(df[['Visitor_Score']])
-    # arr['Visitor_Score'] = arr['Visitor_Score'].replace(-np.inf, 0)
-    #
-    # arr['Visitor_Score'] = np.log(np.log(arr['Visitor_Score'] + 1))
-    # arr['Visitor_Score'] = arr['Visitor_Score'].replace(-np.inf, 0)
-    # scaled = MinMaxScaler().fit_transform(arr[['Visitor_Score']])
-
     arr = np.where(np.isinf(arr), 0, arr)
     arr = np.log(np.log(arr + 1) + 1)
     arr = np.where(np.isinf(arr), 0, arr)
+    print("shape: " + str(arr.shape))
     scaled = MinMaxScaler().fit_transform(arr.reshape(-1, 1))
     scaled[scaled < .5] = 0
     scaled[scaled >= .5] = 1
-
     return scaled
