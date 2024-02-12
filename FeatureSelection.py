@@ -30,9 +30,10 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: fl
 
 def selectFeatures(df) -> pd.DataFrame:
     corr_matrix = df.corr()
-    corr_matrixSales = corr_matrix['sales'].abs().sort_values(ascending=False)
-    # df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
 
+    df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
+
+    corr_matrixSales = df.corr()['sales'].abs().sort_values(ascending=False)
     top_features = corr_matrixSales[1:].index
     print("selected features: " + str(top_features))
     top_features = list(top_features) + ['sales']

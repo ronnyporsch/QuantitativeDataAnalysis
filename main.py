@@ -83,7 +83,6 @@ def createNecessaryDirs():
 if __name__ == '__main__':
     createNecessaryDirs()
     df = buildDF()
-    bla = df['Visitor_Score']
     print(df.describe())
     print(df.info)
     df.to_csv(FINAL_DF_FILE_PATH)
