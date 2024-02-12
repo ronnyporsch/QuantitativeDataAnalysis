@@ -1,11 +1,12 @@
 import sys
+from pathlib import Path
 
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.utils import resample
 
-from Constants import cachedDfFilePath
+from Constants import CACHED_DF_FILE_PATH, CACHE_DIR, OUTPUT_DIR, FINAL_DF_FILE_PATH, PLOTS_DIR
 from DataCleaning import cleanData
 from DataReadingAndMerging import readAndMergeData
 from FeatureSelection import selectFeatures
@@ -58,7 +59,7 @@ def upsampleMinority(data: pd.DataFrame):
 
 def buildDF() -> pd.DataFrame:
     if len(sys.argv) >= 2 and int(sys.argv[1]) >= 1:
-        return pd.read_csv(cachedDfFilePath)
+        return pd.read_csv(CACHED_DF_FILE_PATH)
 
     inputDF = readAndMergeData()
 
@@ -68,15 +69,23 @@ def buildDF() -> pd.DataFrame:
     inputDF = cleanData(inputDF)
     inputDF = selectFeatures(inputDF)
     inputDF = upsampleMinority(inputDF)
-    inputDF.to_csv(cachedDfFilePath)
+    inputDF.to_csv(CACHED_DF_FILE_PATH)
     return inputDF
 
 
+def createNecessaryDirs():
+    Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+    Path(PLOTS_DIR).mkdir(parents=True, exist_ok=True)
+    Path(MODELS_DIR).mkdir(parents=True, exist_ok=True)
+
+
 if __name__ == '__main__':
+    createNecessaryDirs()
     df = buildDF()
     bla = df['Visitor_Score']
     print(df.describe())
     print(df.info)
-    df.to_csv("data/output/finalDF.csv")
+    df.to_csv(FINAL_DF_FILE_PATH)
     # tuneHyperParametersRF(df, 'sales')
     trainAllModels(df, 'sales', models)
