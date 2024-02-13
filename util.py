@@ -39,11 +39,11 @@ def createConfusionMatrix(y_test, predictions, dependentVariable, model):
 
 
 class ModelResult:
-    def __init__(self, parameters, accuracy): #, precision, recall, f1):
+    def __init__(self, parameters, accuracy, precision, recall, f1):
         self.accuracy = accuracy
-        # self.precision = precision
-        # self.recall = recall
-        # self.f1 = f1
+        self.precision = precision
+        self.recall = recall
+        self.f1 = f1
         self.parameters = parameters
 
 

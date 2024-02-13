@@ -65,7 +65,7 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model, X_train, X_test,
     print("Recall: {:.4f}".format(recall))
     print("F1 Score: {:.4f}".format(f1))
 
-    result = ModelResult(df.columns.to_list(), accuracy)
+    result = ModelResult(df.columns.to_list(), accuracy, precision, recall, f1)
     saveModelResult(model, result)
 
     # insert an intercept
