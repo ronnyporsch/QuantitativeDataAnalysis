@@ -33,7 +33,7 @@ def selectFeatures(df) -> pd.DataFrame:
     # df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
 
     corr_matrixSales = df.corr()['sales'].abs().sort_values(ascending=False)
-    top_features = corr_matrixSales[1:100].index
+    top_features = corr_matrixSales[1:].index
     print("selected features: " + str(top_features))
 
     my_set = set(list(top_features))
