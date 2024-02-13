@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 
-# TODO this method does currently not work as expected (will delete variables that are closely correlated with sales?
 def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: float):
     """
     :source: https://stackoverflow.com/questions/29294983/how-to-calculate-correlation-between-all-columns-and-remove-highly-correlated-on
@@ -31,11 +30,19 @@ def dropFeaturesWithHighCorrelation(df: pd.DataFrame, corr_matrix, threshold: fl
 def selectFeatures(df) -> pd.DataFrame:
     corr_matrix = df.corr()
 
-    df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
+    # df = dropFeaturesWithHighCorrelation(df, corr_matrix, 0.8)
 
     corr_matrixSales = df.corr()['sales'].abs().sort_values(ascending=False)
-    top_features = corr_matrixSales[1:].index
+    top_features = corr_matrixSales[1:100].index
     print("selected features: " + str(top_features))
-    top_features = list(top_features) + ['sales']
+
+    my_set = set(list(top_features))
+    visScoreExists = 'Visitor_Score' in my_set  # Perform efficient membership test
+
+    if visScoreExists:
+        top_features = list(top_features) + ['sales']
+    else:
+        top_features = list(top_features) + ['sales'] + ['Visitor_Score']
 
     return df[top_features]
+

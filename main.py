@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+from imblearn.over_sampling import SMOTE
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
@@ -50,11 +51,16 @@ def upsampleMinority(data: pd.DataFrame):
     return pd.concat([df_minority_upsampled, df_majority])
 
 
-# def executeOrReadFromCache(function, fromCache=False):
-#     if fromCache:
-#         return pd.read_csv(cachedDfFilePath)
-#     else:
-#         return function()
+# def downsampleMajority(data: pd.DataFrame):
+#     df_majority = data[(data['sales'] == 0)]
+#     df_minority = data[(data['sales'] == 1)]
+#     df_majority_downsampled = resample(df_majority,
+#                                      replace=True,  # sample with replacement
+#                                      n_samples=len(df_minority),  # to match majority class
+#                                      random_state=42)  # reproducible results
+#     return pd.concat([df_majority_downsampled, df_minority])
+
+
 
 
 def buildDF() -> pd.DataFrame:
@@ -68,7 +74,9 @@ def buildDF() -> pd.DataFrame:
 
     inputDF = cleanData(inputDF)
     inputDF = selectFeatures(inputDF)
-    inputDF = upsampleMinority(inputDF)
+    # inputDF = upsampleMinority(inputDF)
+    # inputDF = downsampleMajority(inputDF)
+    # inputDF = upsampleWithSmote(inputDF)
     inputDF.to_csv(CACHED_DF_FILE_PATH)
     return inputDF
 

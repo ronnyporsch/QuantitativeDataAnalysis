@@ -1,21 +1,41 @@
 import numpy as np
 import pandas as pd
 from bayes_opt import BayesianOptimization
+from imblearn.over_sampling import SMOTE, RandomOverSampler
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import MinMaxScaler
 
 from util import createConfusionMatrix, ModelResult, saveModelResult
 
 
+def upsample(X: pd.DataFrame, labels):
+    ros = RandomOverSampler(random_state=42)
+    # fit predictor and target variable
+    X_upsampled, labels_upsampled = ros.fit_resample(X, labels)
+    return X_upsampled, labels_upsampled
+#
+# def upsampleWithSMOTE(X: pd.DataFrame, labels):
+#     smote = SMOTE(random_state=42)
+#     # fit predictor and target variable
+#     X_upsampled, labels_upsampled = smote.fit_resample(X, labels)
+#     return X_upsampled, labels_upsampled
+
+
 def trainAllModels(df: pd.DataFrame, dependentVariable: str, models):
     X = df.drop([dependentVariable], axis=1)
     y = df[dependentVariable]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+    X_train, y_train = upsample(X_train, y_train)
+    X_test, y_test = upsample(X_test, y_test)
+
     visitorScoresTest = transformVisitorScore(X_test['Visitor_Score'].to_numpy())
+
     X_test = X_test.drop(['Visitor_Score'], axis=1)
     X_train = X_train.drop(['Visitor_Score'], axis=1)
+
+
 
     accuracyVisScore = accuracy_score(y_test, visitorScoresTest)
     print("Visitor Score Accuracy:", accuracyVisScore * 100, "%")
@@ -33,9 +53,17 @@ def trainModel(df: pd.DataFrame, dependentVariable: str, model, X_train, X_test,
     createConfusionMatrix(y_test, predictions, dependentVariable, model)
 
     accuracy = accuracy_score(y_test, predictions)
+    binary_predictions = (predictions > 0.5).astype(int)
+
+    precision = precision_score(y_test, binary_predictions)
+    recall = recall_score(y_test, binary_predictions)
+    f1 = f1_score(y_test, binary_predictions)
 
     # Output the accuracy
     print(str(model) + " Accuracy:", accuracy * 100, "%")
+    print("Precision: {:.4f}".format(precision))
+    print("Recall: {:.4f}".format(recall))
+    print("F1 Score: {:.4f}".format(f1))
 
     result = ModelResult(df.columns.to_list(), accuracy)
     saveModelResult(model, result)
