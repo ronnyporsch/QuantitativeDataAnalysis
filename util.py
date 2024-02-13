@@ -8,7 +8,7 @@ from joblib import dump
 from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
 
-from Constants import MODELS_DIR
+from Constants import MODELS_DIR, PLOTS_DIR
 
 
 # cleans a string by removing everything except letters and numbers
@@ -34,7 +34,7 @@ def createConfusionMatrix(y_test, predictions, dependentVariable, model):
     plt.ylabel("Reality", fontsize=16)
     plt.xlabel("Prediction", fontsize=16)
     plt.title(str(model) + " with added synthetic data", fontsize=18, y=1.18)
-    fig.savefig(MODELS_DIR + "/cw_" + str(model) + ".png", dpi=300)
+    fig.savefig(PLOTS_DIR + "/cw_" + str(model) + ".png", dpi=300)
     plt.show()
 
 
